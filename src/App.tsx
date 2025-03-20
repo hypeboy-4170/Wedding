@@ -1,127 +1,126 @@
 import { motion } from 'framer-motion';
 import { FloatingElements } from './components/FloatingElements';
-import { Edit2 } from 'lucide-react';
+import { HeartAnimation } from './components/HeartAnimation';
 import { useSupabaseMessages } from './hooks/useSupabase';
 import { useState, useEffect } from 'react';
-import { HeartAnimation } from './components/HeartAnimation';
 
 function App() {
-  const [message, setMessage] = useState("お二人の新しい人生の門出を\n心よりお祝い申し上げます。\n末永くお幸せに。");
-  const [isEditing, setIsEditing] = useState(false);
-  const { getMessages, updateMessage, loading: messageLoading, error: messageError } = useSupabaseMessages();
+  const [message, setMessage] = useState("中学・高校時代よりお世話になったお二人が結ばれたことは、なにより特別でありとても感慨深いです。これからの新たな人生も、お互いに支え合いながら、素敵な家庭を築かれることを心よりお祈り申し上げます。\n末永くお幸せに！");
+  const { getMessages } = useSupabaseMessages();
+  const [effectType, setEffectType] = useState<'cascade' | 'fountain' | 'fireworks' | 'rain'>('cascade');
 
   useEffect(() => {
-    const loadInitialData = async () => {
+    const loadInitialMessage = async () => {
       const initialMessage = await getMessages();
       if (initialMessage) {
         setMessage(initialMessage.content);
       }
     };
-    loadInitialData();
+    loadInitialMessage();
   }, [getMessages]);
 
-  const handleMessageUpdate = async () => {
-    if (!isEditing) return;
-    try {
-      await updateMessage(message);
-      setIsEditing(false);
-    } catch (err) {
-      console.error('Message update failed:', err);
+  const fadeInUpVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 1.2,
+        ease: "easeOut"
+      }
     }
   };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+      <motion.div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.2 }}
+        transition={{ duration: 2 }}
         style={{
-          backgroundImage: `url("https://qogvnargefvimqlquouc.supabase.co/storage/v1/object/public/WeddingImage//wedding4.jpg")`,
+          backgroundImage: `url("https://qogvnargefvimqlquouc.supabase.co/storage/v1/object/sign/WeddingImage/wedding4.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJXZWRkaW5nSW1hZ2Uvd2VkZGluZzQuanBnIiwiaWF0IjoxNzQyNDg1NDY3LCJleHAiOjIwNTc4NDU0Njd9.Qg6K8Fj4gvH1y_N2f6Zf3ZAWjUyUgOkl1gp7k-HPd6I")`,
         }}
       />
       
       <FloatingElements />
 
-      <div className="relative min-h-screen flex items-center justify-center p-4 md:p-8">
-        <div className="container mx-auto max-w-6xl flex flex-col items-center gap-8">
-          {/* Photo */}
-          <motion.div 
-            className="w-full max-w-[800px]"
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1 }}
-          >
-            <div className="relative">
-              <motion.img
-                src="https://qogvnargefvimqlquouc.supabase.co/storage/v1/object/public/WeddingImage//IMG_1143.png"
-                alt="Wedding couple"
-                className="w-full h-auto object-contain"
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 1 }}
-                style={{
-                  filter: 'drop-shadow(0 25px 25px rgb(0 0 0 / 0.15))'
-                }}
-              />
-            </div>
-          </motion.div>
+      <div className="relative min-h-screen flex flex-col md:flex-row">
+        {/* Left Side - Photo */}
+        <motion.div 
+          className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center"
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUpVariants}
+        >
+          <motion.img
+            src="hhttps://qogvnargefvimqlquouc.supabase.co/storage/v1/object/sign/WeddingImage/IMG_1143.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJXZWRkaW5nSW1hZ2UvSU1HXzExNDMucG5nIiwiaWF0IjoxNzQyNDg1Mzg0LCJleHAiOjIwNTc4NDUzODR9.6J_t1_fReP0dBTqja-Im6KS8sLG6ZtI34FErukSFgqI"
+            alt="Wedding couple"
+            className="w-full max-w-2xl object-contain"
+            style={{ maxHeight: '70vh' }}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
+          />
+        </motion.div>
 
-          {/* Message */}
+        {/* Right Side - Message */}
+        <motion.div 
+          className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center"
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUpVariants}
+        >
           <motion.div 
-            className="w-full max-w-[800px] bg-white/80 backdrop-blur-sm rounded-lg shadow-xl p-12"
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1 }}
+            className="bg-white/80 backdrop-blur-sm p-6 md:p-8 rounded-lg shadow-xl max-w-lg w-full relative overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2, delay: 0.6 }}
           >
             <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="flex flex-col"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1 }}
+              className="relative z-10"
             >
-              <HeartAnimation />
-              
-              <h1 className="text-4xl font-bold text-gray-800 text-center mb-10 font-serif">
-                ご結婚おめでとうございます
-              </h1>
-              
-              <div className="mb-10">
-                {isEditing ? (
-                  <textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onBlur={handleMessageUpdate}
-                    className="w-full min-h-[200px] p-6 border rounded-md text-2xl text-gray-700 leading-relaxed focus:outline-none focus:ring-2 focus:ring-pink-500"
-                    autoFocus
-                  />
-                ) : (
-                  <div className="relative group">
-                    <p className="text-2xl text-gray-700 leading-relaxed whitespace-pre-line">
-                      {message}
-                    </p>
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity p-2"
-                      disabled={messageLoading}
-                    >
-                      <Edit2 className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
-                )}
+              <div className="relative">
+                <HeartAnimation />
               </div>
               
-              {messageError && (
-                <div className="text-red-600 text-sm mb-4">
-                  {messageError}
-                </div>
-              )}
+              <motion.h1 
+                className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 1.2 }}
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  letterSpacing: "0.5px"
+                }}
+              >
+                Wishing you a lifetime of love and happiness!
+              </motion.h1>
               
-              <p className="text-right text-gray-600 italic text-xl">
-                2024年3月吉日
-              </p>
+              <motion.div 
+                className="text-base md:text-lg text-gray-700 leading-relaxed"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 1.4 }}
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: "1rem",
+                  lineHeight: "1.8"
+                }}
+              >
+                <p className="text-left mb-4">
+                  中学・高校時代よりお世話になったお二人が結ばれたことは、なにより特別でありとても感慨深いです。これからの新たな人生も、お互いに支え合いながら、素敵な家庭を築かれることを心よりお祈り申し上げます。
+                </p>
+                <p className="text-center">
+                  末永くお幸せに！
+                </p>
+              </motion.div>
             </motion.div>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
